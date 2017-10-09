@@ -1,0 +1,22 @@
+{
+  "name": "imagecompress",
+  "version": "1.0.0",
+  "description": "html图片压缩",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -a 192.168.1.185 -p 8183 -c-1",
+    "build": "webpack"
+  },
+  "keywords": [
+    "html5图片压缩",
+    "图片压缩"
+  ],
+  "author": "lyf",
+  "license": "ISC",
+  "dependencies": {
+    "exif-js": "^2.3.0",
+    "http-server": "^0.10.0",
+    "webpack": "^3.6.0"
+  }
+}
