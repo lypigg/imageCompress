@@ -11,7 +11,7 @@
 </body>
 <script src="../dist/imageCompress.main.js"></script>
 <script>
-    function toFixed2 (num) {
+    function toFixed2(num) {
         return parseFloat(+num.toFixed(2));
     }
 
@@ -19,7 +19,6 @@
         var files = event.currentTarget.files
         var iamgeompress = new ImageCompress(files[0], {width: 800})
         //测试将canvas 显示出来
-        console.info(iamgeompress)
         iamgeompress.then(function (result) {
             var img = new Image(),
                     div = document.createElement('div'),
@@ -41,9 +40,9 @@
                 document.body.appendChild(div)
             }
             img.src = result.base64
+        }).catch(function (err) {
+            throw new Error(err)
         })
-
-
     }
 </script>
 </html>

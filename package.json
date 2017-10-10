@@ -1,6 +1,6 @@
 {
   "name": "html-image-compress",
-  "version": "1.0.0",
+  "version": "1.0.01",
   "description": "html图片压缩，兼容移动端ios,android,wechat",
   "main": "index.js",
   "scripts": {
@@ -18,9 +18,9 @@
   ],
   "author": "lyf",
   "license": "ISC",
-  "dependencies": {
-    "exif-js": "^2.3.0",
+  "devDependencies": {
     "http-server": "^0.10.0",
+    "exif-js": "^2.3.0",
     "webpack": "^3.6.0"
   }
 }
