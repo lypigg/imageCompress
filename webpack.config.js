@@ -6,16 +6,26 @@ const src = path.resolve(__dirname, 'src');
 
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        "imageCompress.main": './src/index.js'
+    },
     output: {
         path: dist,
-        publicPath: "test",
-        filename: 'imageCompress.main.js',
+        filename: '[name].js',
         library: {
-            root: "imageCompress",
-            amd: "image-compress",
-            commonjs: "image-compress"
+            root: "htmlImageCompress",
+            amd: "html-image-compress",
+            commonjs: "html-image-compress"
         },
         libraryTarget: "umd"
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "babel-loader"
+            }
+        ]
     }
 }

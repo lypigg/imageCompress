@@ -17,7 +17,7 @@
 
     document.getElementById('file').onchange = function (event) {
         var files = event.currentTarget.files
-        var iamgeompress = new ImageCompress(files[0], {width: 800})
+        var iamgeompress = new HtmlImageCompress(files[0], {width: 800})
         //测试将canvas 显示出来
         iamgeompress.then(function (result) {
             var img = new Image(),

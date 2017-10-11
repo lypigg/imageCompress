@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["image-compress"] = factory();
+		exports["html-image-compress"] = factory();
 	else
-		root["imageCompress"] = factory();
+		root["htmlImageCompress"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -67,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "test";
+/******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
@@ -75,26 +75,38 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_exif_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_exif_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_exif_js__);
 
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _Promise = __webpack_require__(1);
+
+var _Promise2 = _interopRequireDefault(_Promise);
+
+var _exifJs = __webpack_require__(6);
+
+var _exifJs2 = _interopRequireDefault(_exifJs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ua = navigator.userAgent,
     isAndroid = ~ua.indexOf('Android'),
     isInWechat = ~ua.indexOf('MicroMessenger');
 
-
-function IamgeCompress(file, options) {
-    return this._init(file, options)
+function ImageCompress(file, options) {
+    if (!(this instanceof ImageCompress)) {
+        throw new Error('ImageCompress is a constructor and should be called with the `new` keyword');
+    }
+    return this._init(file, options);
 }
 
-
-IamgeCompress.prototype = {
-    _init: function (file, options) {
+ImageCompress.prototype = {
+    _init: function _init(file, options) {
         var that = this;
         that.file = file;
         that.options = {
@@ -102,50 +114,48 @@ IamgeCompress.prototype = {
             height: null,
             quality: 0.7,
             imageType: 'image/jpeg'
-        }
-        var img = that.img = new Image()
+        };
+        var img = that.img = new Image();
         for (var key in options) {
-            that.options[key] = options[key]
+            that.options[key] = options[key];
         }
         var fileUrl = that.fileUrl = URL.createObjectURL(file);
-        return new Promise(function (resovle, reject) {
+        return new _Promise2.default(function (resovle, reject) {
             img.onerror = function (err) {
-                console.error(err)
-                reject(err)
+                console.error(err);
+                reject(err);
             };
 
             img.onload = function (event) {
                 // 非android，会有orientation 图片旋转角度
-                __WEBPACK_IMPORTED_MODULE_0_exif_js___default.a.getData(img, function () {
-                    that.orientation = __WEBPACK_IMPORTED_MODULE_0_exif_js___default.a.getTag(this, 'Orientation');
-                    console.info(that.orientation)
+                _exifJs2.default.getData(img, function () {
+                    that.orientation = _exifJs2.default.getTag(this, 'Orientation');
                     that._createBase64().then(function (base64) {
-                        var file = dataURLtoBlob(base64)
+                        var file = dataURLtoBlob(base64);
                         resovle({
                             base64: base64,
                             base64Len: base64.length,
                             origin: that.file,
                             file: file,
                             fileSize: file.size
-                        })
+                        });
                     }).catch(function (err) {
-                        console.error(err)
-                        reject(err)
-                    })
-                })
+                        console.error(err);
+                        reject(err);
+                    });
+                });
             };
 
             img.src = fileUrl;
-        })
-
+        });
     },
-    _getResize: function () {
+    _getResize: function _getResize() {
         var that = this,
             img = that.img,
             options = that.options,
             width = options.width,
             height = options.height,
-            orientation = that.orientation
+            orientation = that.orientation;
 
         var resize = {
             width: img.width,
@@ -159,7 +169,7 @@ IamgeCompress.prototype = {
 
         // 如果原图小于设定，采用原图大小
         if (resize.width < width || resize.height < height) {
-            return resize
+            return resize;
         }
 
         // 宽高比例
@@ -169,31 +179,23 @@ IamgeCompress.prototype = {
 
             if (scale >= width / height) {
                 resize.width = width;
-                resize.height = Math.ceil(width / scale)
+                resize.height = Math.ceil(width / scale);
             } else {
                 resize.width = Math.ceil(scale * height);
-                resize.height = height
+                resize.height = height;
             }
-
         } else if (width) {
-            alert(width)
-            alert(resize.width)
-            alert(resize.height)
-            alert(scale)
-            alert(Math.ceil(width / scale))
             resize.width = width;
-            resize.height = Math.ceil(width / scale)
-
+            resize.height = Math.ceil(width / scale);
         } else if (height) {
 
             resize.width = Math.ceil(scale * height);
-            resize.height = height
-
+            resize.height = height;
         }
 
-        return resize
+        return resize;
     },
-    _createBase64: function () {
+    _createBase64: function _createBase64() {
         try {
             var that = this,
                 img = that.img,
@@ -253,21 +255,17 @@ IamgeCompress.prototype = {
                     cxt.drawImage(img, 0, 0, resize.width, resize.height);
             }
 
-            return new Promise(function (resolve) {
+            return new _Promise2.default(function (resolve) {
                 realcanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height);
-                console.info(imageType)
-                resolve(realcanvas.toDataURL(imageType, quality))
-            })
+                resolve(realcanvas.toDataURL(imageType, quality));
+            });
         } catch (err) {
-            alert(err)
-            throw new Error(err)
+            throw new Error(err);
         }
     }
 
-}
-
-/**dataURL to blob**/
-function dataURLtoBlob(dataurl) {
+    /**dataURL to blob**/
+};function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','),
         mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]),
@@ -276,15 +274,705 @@ function dataURLtoBlob(dataurl) {
     while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
-    return new Blob([u8arr], {type: mime});
+    return new Blob([u8arr], { type: mime });
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (window.ImageCompress = window.ImageCompress || IamgeCompress);
-
-
+exports.default = window.HtmlImageCompress = window.HtmlImageCompress || ImageCompress;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(setImmediate) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+(function (root) {
+
+    // Use polyfill for setImmediate for performance gains
+    var asap = typeof setImmediate === 'function' && setImmediate || function (fn) {
+        setTimeout(fn, 1);
+    };
+
+    // Polyfill for Function.prototype.bind
+    function bind(fn, thisArg) {
+        return function () {
+            fn.apply(thisArg, arguments);
+        };
+    }
+
+    var isArray = Array.isArray || function (value) {
+        return Object.prototype.toString.call(value) === "[object Array]";
+    };
+
+    function Promise(fn) {
+        if (_typeof(this) !== 'object') throw new TypeError('Promises must be constructed via new');
+        if (typeof fn !== 'function') throw new TypeError('not a function');
+        this._state = null;
+        this._value = null;
+        this._deferreds = [];
+
+        doResolve(fn, bind(resolve, this), bind(reject, this));
+    }
+
+    function handle(deferred) {
+        var me = this;
+        if (this._state === null) {
+            this._deferreds.push(deferred);
+            return;
+        }
+        asap(function () {
+            var cb = me._state ? deferred.onFulfilled : deferred.onRejected;
+            if (cb === null) {
+                (me._state ? deferred.resolve : deferred.reject)(me._value);
+                return;
+            }
+            var ret;
+            try {
+                ret = cb(me._value);
+            } catch (e) {
+                deferred.reject(e);
+                return;
+            }
+            deferred.resolve(ret);
+        });
+    }
+
+    function resolve(newValue) {
+        try {
+            //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+            if (newValue === this) throw new TypeError('A promise cannot be resolved with itself.');
+            if (newValue && ((typeof newValue === 'undefined' ? 'undefined' : _typeof(newValue)) === 'object' || typeof newValue === 'function')) {
+                var then = newValue.then;
+                if (typeof then === 'function') {
+                    doResolve(bind(then, newValue), bind(resolve, this), bind(reject, this));
+                    return;
+                }
+            }
+            this._state = true;
+            this._value = newValue;
+            finale.call(this);
+        } catch (e) {
+            reject.call(this, e);
+        }
+    }
+
+    function reject(newValue) {
+        this._state = false;
+        this._value = newValue;
+        finale.call(this);
+    }
+
+    function finale() {
+        for (var i = 0, len = this._deferreds.length; i < len; i++) {
+            handle.call(this, this._deferreds[i]);
+        }
+        this._deferreds = null;
+    }
+
+    function Handler(onFulfilled, onRejected, resolve, reject) {
+        this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+        this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+        this.resolve = resolve;
+        this.reject = reject;
+    }
+
+    /**
+     * Take a potentially misbehaving resolver function and make sure
+     * onFulfilled and onRejected are only called once.
+     *
+     * Makes no guarantees about asynchrony.
+     */
+    function doResolve(fn, onFulfilled, onRejected) {
+        var done = false;
+        try {
+            fn(function (value) {
+                if (done) return;
+                done = true;
+                onFulfilled(value);
+            }, function (reason) {
+                if (done) return;
+                done = true;
+                onRejected(reason);
+            });
+        } catch (ex) {
+            if (done) return;
+            done = true;
+            onRejected(ex);
+        }
+    }
+
+    Promise.prototype['catch'] = function (onRejected) {
+        return this.then(null, onRejected);
+    };
+
+    Promise.prototype.then = function (onFulfilled, onRejected) {
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            handle.call(me, new Handler(onFulfilled, onRejected, resolve, reject));
+        });
+    };
+
+    Promise.all = function () {
+        var args = Array.prototype.slice.call(arguments.length === 1 && isArray(arguments[0]) ? arguments[0] : arguments);
+
+        return new Promise(function (resolve, reject) {
+            if (args.length === 0) return resolve([]);
+            var remaining = args.length;
+
+            function res(i, val) {
+                try {
+                    if (val && ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' || typeof val === 'function')) {
+                        var then = val.then;
+                        if (typeof then === 'function') {
+                            then.call(val, function (val) {
+                                res(i, val);
+                            }, reject);
+                            return;
+                        }
+                    }
+                    args[i] = val;
+                    if (--remaining === 0) {
+                        resolve(args);
+                    }
+                } catch (ex) {
+                    reject(ex);
+                }
+            }
+
+            for (var i = 0; i < args.length; i++) {
+                res(i, args[i]);
+            }
+        });
+    };
+
+    Promise.resolve = function (value) {
+        if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor === Promise) {
+            return value;
+        }
+
+        return new Promise(function (resolve) {
+            resolve(value);
+        });
+    };
+
+    Promise.reject = function (value) {
+        return new Promise(function (resolve, reject) {
+            reject(value);
+        });
+    };
+
+    Promise.race = function (values) {
+        return new Promise(function (resolve, reject) {
+            for (var i = 0, len = values.length; i < len; i++) {
+                values[i].then(resolve, reject);
+            }
+        });
+    };
+
+    /**
+     * Set the immediate function to execute callbacks
+     * @param fn {function} Function to execute
+     * @private
+     */
+    Promise._setImmediateFn = function _setImmediateFn(fn) {
+        asap = fn;
+    };
+
+    Promise.prototype.finally = function (callback) {
+        var constructor = this.constructor;
+
+        return this.then(function (value) {
+            return constructor.resolve(callback()).then(function () {
+                return value;
+            });
+        }, function (reason) {
+            return constructor.resolve(callback()).then(function () {
+                throw reason;
+            });
+        });
+    };
+
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = Promise;
+    } else if (!root.Promise) {
+        root.Promise = Promise;
+    }
+})(undefined);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2).setImmediate))
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(3);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(5)))
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function() {

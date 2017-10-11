@@ -1,3 +1,4 @@
+import Promise from './lib/Promise'
 import EXIF from 'exif-js'
 
 var ua = navigator.userAgent,
@@ -5,12 +6,15 @@ var ua = navigator.userAgent,
     isInWechat = ~ua.indexOf('MicroMessenger');
 
 
-function IamgeCompress(file, options) {
+function ImageCompress(file, options) {
+    if (!(this instanceof ImageCompress)) {
+        throw new Error('ImageCompress is a constructor and should be called with the `new` keyword')
+    }
     return this._init(file, options)
 }
 
 
-IamgeCompress.prototype = {
+ImageCompress.prototype = {
     _init: function (file, options) {
         var that = this;
         that.file = file;
@@ -35,7 +39,6 @@ IamgeCompress.prototype = {
                 // 非android，会有orientation 图片旋转角度
                 EXIF.getData(img, function () {
                     that.orientation = EXIF.getTag(this, 'Orientation');
-                    console.info(that.orientation)
                     that._createBase64().then(function (base64) {
                         var file = dataURLtoBlob(base64)
                         resovle({
@@ -93,11 +96,6 @@ IamgeCompress.prototype = {
             }
 
         } else if (width) {
-            alert(width)
-            alert(resize.width)
-            alert(resize.height)
-            alert(scale)
-            alert(Math.ceil(width / scale))
             resize.width = width;
             resize.height = Math.ceil(width / scale)
 
@@ -172,11 +170,9 @@ IamgeCompress.prototype = {
 
             return new Promise(function (resolve) {
                 realcanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height);
-                console.info(imageType)
                 resolve(realcanvas.toDataURL(imageType, quality))
             })
         } catch (err) {
-            alert(err)
             throw new Error(err)
         }
     }
@@ -196,5 +192,5 @@ function dataURLtoBlob(dataurl) {
     return new Blob([u8arr], {type: mime});
 }
 
-export default window.ImageCompress = window.ImageCompress || IamgeCompress
+export default window.HtmlImageCompress = window.HtmlImageCompress || ImageCompress
 
