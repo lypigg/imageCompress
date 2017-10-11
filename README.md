@@ -1,9 +1,9 @@
 # imageCompress
 html5 图片 压缩
-### 如何安装
+### 1、如何安装
   npm install --save-dev html-image-compress
 
-### 如何使用
+### 2、如何使用
 ```html
 <input id="file" type="file" accept="image/*" />
 ```
@@ -28,7 +28,7 @@ document.querySelector('#file').addEventListener('change', function () {
   });;
 });
 ```
-### 参数
+### 3、参数
 ```js
 new HtmlImageCompress(file, [options]);
 ```
@@ -40,7 +40,7 @@ new HtmlImageCompress(file, [options]);
   * quality {Number} 图片压缩质量，取值 0 - 1，默认为0.7
   * imageType {String} 图片类型 ，默认 'image/jpeg'
   
-### 返回结果
+### 4、返回结果
 * 返回值是一个promise对象
   then(result)
   * result.file 压缩后的file对象
