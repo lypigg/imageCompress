@@ -8,7 +8,8 @@ var ua = navigator.userAgent,
 
 function ImageCompress(file, options) {
     if (!(this instanceof ImageCompress)) {
-        throw new Error('ImageCompress is a constructor and should be called with the `new` keyword')
+        throw new Error('ImageCompress is a constructor and should be called with the `new` keyword');
+        return;
     }
     return this._init(file, options)
 }
@@ -28,37 +29,51 @@ ImageCompress.prototype = {
         for (var key in options) {
             that.options[key] = options[key]
         }
-        var fileUrl = that.fileUrl = URL.createObjectURL(file);
         return new Promise(function (resovle, reject) {
-            img.onerror = function (err) {
-                console.error(err)
-                reject(err)
-            };
-
-            img.onload = function (event) {
-                // 非android，会有orientation 图片旋转角度
-                EXIF.getData(img, function () {
-                    that.orientation = EXIF.getTag(this, 'Orientation');
-                    that._createBase64().then(function (base64) {
-                        var file = dataURLtoBlob(base64)
-                        resovle({
-                            base64: base64,
-                            base64Len: base64.length,
-                            origin: that.file,
-                            file: file,
-                            fileSize: file.size
+            var _imgOnload = function () {
+                    // 非android，会有orientation 图片旋转角度
+                    EXIF.getData(img, function () {
+                        that.orientation = EXIF.getTag(this, 'Orientation');
+                        return that._createBase64().then(function (base64) {
+                            var file = dataURLtoBlob(base64)
+                            resovle({
+                                base64: base64,
+                                base64Len: base64.length,
+                                origin: that.file,
+                                file: file,
+                                fileSize: file.size
+                            })
+                        }).catch(function (err) {
+                            console.error(err)
+                            reject(err)
                         })
-                    }).catch(function (err) {
-                        console.error(err)
-                        reject(err)
                     })
-                })
-            };
-
-            img.src = fileUrl;
+                },
+                _imgonerror = function (err) {
+                    console.error(err)
+                    reject(err)
+                };
+            try {
+                var reader = new FileReader();
+                reader.onerror = function (err) {
+                    console.error(err)
+                    reject(err)
+                };
+                reader.onload = function (result) {
+                    var fileUrl = result.currentTarget.result;
+                    img.onerror = _imgonerror;
+                    img.onload = _imgOnload;
+                    img.src = fileUrl;
+                };
+                reader.readAsDataURL(file);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
         })
 
     },
+
     _getResize: function () {
         var that = this,
             img = that.img,

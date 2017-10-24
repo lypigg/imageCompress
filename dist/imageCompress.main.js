@@ -101,6 +101,7 @@ var ua = navigator.userAgent,
 function ImageCompress(file, options) {
     if (!(this instanceof ImageCompress)) {
         throw new Error('ImageCompress is a constructor and should be called with the `new` keyword');
+        return;
     }
     return this._init(file, options);
 }
@@ -119,18 +120,12 @@ ImageCompress.prototype = {
         for (var key in options) {
             that.options[key] = options[key];
         }
-        var fileUrl = that.fileUrl = URL.createObjectURL(file);
         return new _Promise2.default(function (resovle, reject) {
-            img.onerror = function (err) {
-                console.error(err);
-                reject(err);
-            };
-
-            img.onload = function (event) {
+            var _imgOnload = function _imgOnload() {
                 // 非android，会有orientation 图片旋转角度
                 _exifJs2.default.getData(img, function () {
                     that.orientation = _exifJs2.default.getTag(this, 'Orientation');
-                    that._createBase64().then(function (base64) {
+                    return that._createBase64().then(function (base64) {
                         var file = dataURLtoBlob(base64);
                         resovle({
                             base64: base64,
@@ -144,11 +139,31 @@ ImageCompress.prototype = {
                         reject(err);
                     });
                 });
+            },
+                _imgonerror = function _imgonerror(err) {
+                console.error(err);
+                reject(err);
             };
-
-            img.src = fileUrl;
+            try {
+                var reader = new FileReader();
+                reader.onerror = function (err) {
+                    console.error(err);
+                    reject(err);
+                };
+                reader.onload = function (result) {
+                    var fileUrl = result.currentTarget.result;
+                    img.onerror = _imgonerror;
+                    img.onload = _imgOnload;
+                    img.src = fileUrl;
+                };
+                reader.readAsDataURL(file);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
         });
     },
+
     _getResize: function _getResize() {
         var that = this,
             img = that.img,
