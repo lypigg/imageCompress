@@ -1,4 +1,4 @@
-import Promise from './lib/Promise'
+var Promise = require('es6-promise').Promise;
 import EXIF from 'exif-js'
 
 var ua = navigator.userAgent,
@@ -29,13 +29,20 @@ ImageCompress.prototype = {
         for (var key in options) {
             that.options[key] = options[key]
         }
+
         return new Promise(function (resovle, reject) {
             var _imgOnload = function () {
                     // 非android，会有orientation 图片旋转角度
                     EXIF.getData(img, function () {
                         that.orientation = EXIF.getTag(this, 'Orientation');
                         return that._createBase64().then(function (base64) {
-                            var file = dataURLtoBlob(base64)
+                            var file;
+                            try {
+                                file = dataURLtoBlob(base64)
+                            } catch (err) {
+                                console.error(err)
+                                reject(err)
+                            }
                             resovle({
                                 base64: base64,
                                 base64Len: base64.length,
@@ -125,6 +132,7 @@ ImageCompress.prototype = {
     },
     _createBase64: function () {
         try {
+
             var that = this,
                 img = that.img,
                 quality = that.options.quality,
@@ -141,7 +149,6 @@ ImageCompress.prototype = {
             var cxt = that.cxt = that.canvas.getContext('2d');
             // 填充背景颜色设置为 白色
             cxt.fillStyle = '#fff';
-
             // 调整为正确方向
             switch (orientation) {
                 case 3:
@@ -182,10 +189,10 @@ ImageCompress.prototype = {
                 default:
                     cxt.drawImage(img, 0, 0, resize.width, resize.height);
             }
-
             return new Promise(function (resolve) {
                 realcanvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height);
-                resolve(realcanvas.toDataURL(imageType, quality))
+                var dataUrl = realcanvas.toDataURL(imageType, quality)
+                resolve(dataUrl)
             })
         } catch (err) {
             throw new Error(err)

@@ -1,6 +1,6 @@
 {
   "name": "html-image-compress",
-  "version": "1.0.07",
+  "version": "1.1.0",
   "description": "html图片压缩，兼容移动端ios,android,wechat",
   "main": "./dist/imageCompress.main.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "exif-js": "^2.3.0",
     "http-server": "^0.10.0",
-    "webpack": "^3.6.0"
-  },
-  "dependencies": {}
+    "webpack": "^3.6.0",
+    "es6-promise": "^4.1.1"
+  }
 }
